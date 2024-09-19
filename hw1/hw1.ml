@@ -197,6 +197,38 @@ let rec rev_seq seq =
   | Elt x -> Elt x
   | Seq (left, right) -> Seq(rev_seq right, rev_seq left)
 
+
+let rec map_seq seq f =
+  match seq with
+  | Elt x -> Elt (f x)
+  | Seq (left, right) -> Seq (map_seq left f, map_seq right f)
+
+
+let rec fold_left_seq f acc seq =
+  match seq with
+  | Elt x -> f acc x
+  | Seq (left, right) -> 
+    let acc' = fold_left_seq f acc left in
+    fold_left_seq f acc' right    
+
+let rec fold_right_seq f seq acc =
+  match seq with
+  | Elt x -> f x acc
+  | Seq (left, right) ->
+    let acc' = fold_right_seq f right acc in
+    fold_right_seq f left acc'
+    
+let rec seq2list seq = 
+  let rec append l1 l2 =
+    match  l1 with
+    | [] -> l2
+    | first::rest -> first::(append rest l2)
+  in
+  match seq with
+  | Elt x -> [x]
+  | Seq (left, right) -> 
+    append (seq2list left) (seq2list right)
+
 let ans7 =
   let seq1 = Elt 1 @@ Elt 2 in
   let seq2 = Elt 2 @@ Elt 1 in
@@ -217,6 +249,11 @@ let ans7 =
   let revsersed_seq = rev_seq seq_before_rev in
   Printf.printf "7.4(rev) ";
   print_seq revsersed_seq;
+  Printf.printf "\n";
+  let square_func x = x*x in
+  let doubled_seq = map_seq revsersed_seq square_func in
+  Printf.printf "7.4(map) ";
+  print_seq doubled_seq;
   Printf.printf "\n";;
 
 let ()=
