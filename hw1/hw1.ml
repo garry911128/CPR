@@ -228,6 +228,26 @@ let rec seq2list seq =
   | Elt x -> [x]
   | Seq (left, right) -> 
     append (seq2list left) (seq2list right)
+    
+let rec seq_length seq =
+  match seq with
+  | Elt _ -> 1
+  | Seq (left, right) -> seq_length left + seq_length right
+
+let rec find_opt x seq =
+  let rec find_aux seq current_index = 
+    match seq with
+    | Elt y -> 
+      if x = y then Some current_index
+      else None
+    | Seq(left, right) ->
+      match find_aux left current_index with
+      | Some i -> Some i
+      | None -> find_aux right (current_index + seq_length left)  
+  in
+  find_aux seq 0
+  
+    
 
 let ans7 =
   let seq1 = Elt 1 @@ Elt 2 in
@@ -255,6 +275,7 @@ let ans7 =
   Printf.printf "7.4(map) ";
   print_seq doubled_seq;
   Printf.printf "\n";;
+  
 
 let ()=
   ans1;
