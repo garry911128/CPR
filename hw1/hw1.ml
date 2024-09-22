@@ -247,35 +247,69 @@ let rec find_opt x seq =
   in
   find_aux seq 0
   
-    
+let rec nth seq n =
+  match seq with
+  | Elt x -> 
+      if n = 0 then x
+      else failwith "Index out of bounds"
+  | Seq (left, right) ->
+      let left_len = seq_length left in
+      if n < left_len then
+        nth left n
+      else
+        nth right (n - left_len)
 
 let ans7 =
   let seq1 = Elt 1 @@ Elt 2 in
   let seq2 = Elt 2 @@ Elt 1 in
+
   let concatenated_seq = seq2 @@ seq1 @@ seq2 in
-  Printf.printf "the origin seq:";
+  
+  Printf.printf "The original sequence: ";
   print_seq concatenated_seq;
   Printf.printf "\n";
+  
   let head = hd concatenated_seq in
+  Printf.printf "7.a1(hd): %d\n" head;
+  
   let tail = tl concatenated_seq in
-  Printf.printf "7.1(hd) ";
-  Printf.printf "%d\n" head;
-  Printf.printf "7.2(tl) ";
+  Printf.printf "7.a2(tl): ";
   print_seq tail;
   Printf.printf "\n";
-  Printf.printf "7.3(mem) ";
-  Printf.printf "%B\n" (mem concatenated_seq 3);
-  let seq_before_rev = Elt 1 @@ (Elt 2 @@ (Elt 3 @@ Elt 4)) in
-  let revsersed_seq = rev_seq seq_before_rev in
-  Printf.printf "7.4(rev) ";
-  print_seq revsersed_seq;
-  Printf.printf "\n";
-  let square_func x = x*x in
-  let doubled_seq = map_seq revsersed_seq square_func in
-  Printf.printf "7.4(map) ";
-  print_seq doubled_seq;
-  Printf.printf "\n";;
   
+  Printf.printf "7.a3(mem): %B\n" (mem concatenated_seq 3);
+  
+  let seq_before_rev = Elt 1 @@ (Elt 2 @@ (Elt 3 @@ Elt 4)) in
+  let reversed_seq = rev_seq seq_before_rev in
+  Printf.printf "7.a4(rev): ";
+  print_seq reversed_seq;
+  Printf.printf "\n";
+  
+  let square_func x = x * x in
+  let squared_seq = map_seq reversed_seq square_func in
+  Printf.printf "7.a5(map): ";
+  print_seq squared_seq;
+  Printf.printf "\n";
+  
+  let sum = fold_left_seq (fun acc x -> acc + x) 0 squared_seq in
+  Printf.printf "7.a6(fold_left): %d\n" sum;
+  
+  let product = fold_right_seq (fun x acc -> acc * x) squared_seq 1 in
+  Printf.printf "7.a7(fold_right): %d\n" product;
+  
+  let list_from_seq = seq2list concatenated_seq in
+  Printf.printf "7.b(seq2list): ";
+  List.iter (Printf.printf "%d ") list_from_seq;
+  Printf.printf "\n";
+  
+  let index_of_two = find_opt 1 concatenated_seq in
+  Printf.printf "7.c(find_opt): %s\n" 
+    (match index_of_two with Some i -> string_of_int i | None -> "Not found");
+  
+  let third_elem = nth concatenated_seq 2 in
+  Printf.printf "7.d(nth): %d\n" third_elem
+;;
+        
 
 let ()=
   ans1;
