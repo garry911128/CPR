@@ -16,7 +16,7 @@ isqrt:
     movl    $1, -8(%rbp)            # s = 1
 
 .Lloop_isqrt:
-    movl    8(%rbp), %eax           # eax = n (argument passed to isqrt, located at [rbp+8])
+    movl    %edi, %eax           # eax = n (argument passed to isqrt, located at [rbp+8])
     cmpl    -8(%rbp), %eax          # Compare eax with s
     jl      .Lend_isqrt             # If n < s, jump to end of loop
 
