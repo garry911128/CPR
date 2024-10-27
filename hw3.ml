@@ -110,8 +110,6 @@ let rec follow c r =
       let f1 = if Cset.mem c (last r) then first r else Cset.empty in
       Cset.union f1 (follow c r)
   
-
-      
 let test_follow () =
   let ca = ('a', 0) and cb = ('b', 0) in
   let a = Character ca and b = Character cb in
@@ -151,12 +149,91 @@ let test_follow () =
   print_cset result6;
 
   let r4 = Concat (Star a, Star b) in
-  let result7 = follow cb r4 in
+  let result7 = follow ca r4 in
   Printf.printf "follow ('a', 0) in a*b*: ";
-  print_cset result7
+  print_cset result7;
 
+  let result8 = follow cb r4 in
+  Printf.printf "follow ('b', 0) in a*b*: ";
+  print_cset result8
+
+(* DFA的基本結構 *)
+module Cmap = Map.Make(Char)
+module Smap = Map.Make(struct
+  type t = Cset.t
+  let compare = Cset.compare
+end)
+
+type state = Cset.t
+
+type autom = {
+  start : state;             (* 初始狀態 *)
+  trans : state Cmap.t Smap.t; (* 狀態轉換表 *)
+}
+
+let eof = ('#', -1)  (* 定義 # 字符 *)
+
+(* 構建DFA的函數 *)
+let make_dfa r =
+  let r = Concat (r, Character eof) in
+  let trans = ref Smap.empty in
+
+  let rec transitions q =
+    if not (Smap.mem q !trans) then
+      let cmap = ref Cmap.empty in
+      Cset.iter (fun (c, _) ->
+        let next_q = 
+          Cset.fold (fun ci acc ->
+            if fst ci = c then Cset.union acc (follow ci r) else acc
+          ) q Cset.empty in
+        
+        if not (Cset.is_empty next_q) then
+          cmap := Cmap.add c next_q !cmap;
+      ) q;
   
+      (* 只在狀態包含 # 時，添加到空白狀態的轉換 *)
+      if Cset.mem eof q then
+        cmap := Cmap.add '#' Cset.empty !cmap;
+  
+      trans := Smap.add q !cmap !trans;
+      Cmap.iter (fun _ next_q -> transitions next_q) !cmap
+  
+  in
+
+  let q0 = first r in
+  transitions q0;
+
+  { start = q0; trans = !trans }
+
+let fprint_state fmt q =
+  Cset.iter (fun (c,i) ->
+  if c = '#' then Format.fprintf fmt "# " else Format.fprintf fmt "%c%i " c i) q
+let fprint_transition fmt q c q' =
+Format.fprintf fmt "\"%a\" -> \"%a\" [label=\"%c\"];@\n"
+  fprint_state q
+  fprint_state q'
+  c
+let fprint_autom fmt a =
+  Format.fprintf fmt "digraph A {@\n";
+  Format.fprintf fmt " @[\"%a\" [ shape = \"rect\"];@\n" fprint_state a.start;
+  Smap.iter
+    (fun q t -> Cmap.iter (fun c q' -> fprint_transition fmt q c q') t)
+    a.trans;
+  Format.fprintf fmt "@]@\n}@."
+let save_autom file a =
+  let ch = open_out file in
+  Format.fprintf (Format.formatter_of_out_channel ch) "%a" fprint_autom a;
+  close_out ch
+    
+    (* To test, we take the example above:
+    (a|b)*a(a|b) *)
+let r = Concat (Star (Union (Character ('a', 1), Character ('b', 1))),
+  Concat (Character ('a', 2),
+  Union (Character ('a', 3), Character ('b', 2))))
+let a = make_dfa r
+
 let () = 
   test_null ();
   test_first_last ();
   test_follow();
+  save_autom "autom.dot" a;
