@@ -224,16 +224,18 @@ let save_autom file a =
   let ch = open_out file in
   Format.fprintf (Format.formatter_of_out_channel ch) "%a" fprint_autom a;
   close_out ch
-    
+
+let test_autom () =
     (* To test, we take the example above:
     (a|b)*a(a|b) *)
-let r = Concat (Star (Union (Character ('a', 1), Character ('b', 1))),
+  let r = Concat (Star (Union (Character ('a', 1), Character ('b', 1))),
   Concat (Character ('a', 2),
-  Union (Character ('a', 3), Character ('b', 2))))
-let a = make_dfa r
+  Union (Character ('a', 3), Character ('b', 2)))) in
+  let a = make_dfa r in
+  save_autom "autom.dot" a
 
 let () = 
   test_null ();
   test_first_last ();
   test_follow();
-  save_autom "autom.dot" a;
+  test_autom()
