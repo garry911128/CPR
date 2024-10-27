@@ -18,7 +18,7 @@ let rec null r =
   | Star _ -> true
 
 (* 測試函數 *)
-let test_null () =
+let test_q1 () =
   let a = Character ('a', 0) in
   let r1 = Star a in
   let r2 = Concat (Epsilon, Star Epsilon) in
@@ -61,7 +61,7 @@ let print_cset cset =
     Printf.printf "(%c, %d) " c i) cset;
   Printf.printf "\n"
 
-let test_first_last () =
+let test_q2 () =
   let ca = ('a', 0) and cb = ('b', 0) in
   let a = Character ca and b = Character cb in
   let ab = Concat (a, b) in
@@ -110,7 +110,7 @@ let rec follow c r =
       let f1 = if Cset.mem c (last r) then first r else Cset.empty in
       Cset.union f1 (follow c r)
   
-let test_follow () =
+let test_q3 () =
   let ca = ('a', 0) and cb = ('b', 0) in
   let a = Character ca and b = Character cb in
   let ab = Concat (a, b) in
@@ -243,8 +243,7 @@ let save_autom file a =
   let ch = open_out file in
   Format.fprintf (Format.formatter_of_out_channel ch) "%a" fprint_autom a;
   close_out ch
-
-let test_autom () =
+let test_q4 () =
     (* To test, we take the example above:
     (a|b)*a(a|b) *)
   let r = Concat (Star (Union (Character ('a', 1), Character ('b', 1))),
@@ -253,8 +252,64 @@ let test_autom () =
   let a = make_dfa r in
   save_autom "autom.dot" a
 
+let recognize autom str =
+  let len = String.length str in
+  let rec aux state i =
+    if i = len then
+      Cset.mem ('#', -1) state  (* 檢查是否處於接受狀態 *)
+    else
+      let c = str.[i] in
+      match Smap.find_opt state autom.trans with
+      | None -> false  (* 無法找到當前狀態的轉換，匹配失敗 *)
+      | Some cmap ->
+        match Cmap.find_opt c cmap with
+        | None -> false  (* 無法找到對應字符的轉換，匹配失敗 *)
+        | Some next_state -> aux next_state (i + 1)  (* 轉換到下一個狀態 *)
+  in
+  aux autom.start 0
+
+let test_q5 () =
+  let r1 = Concat (Star (Union (Character ('a', 1), Character ('b', 1))),
+  Concat (Character ('a', 2),
+  Union (Character ('a', 3), Character ('b', 2)))) in
+  let autom1 = make_dfa r1 in
+  (* positive tests *)
+  let () = assert (recognize autom1 "aa") in
+  let () = assert (recognize autom1 "ab") in
+  let () = assert (recognize autom1 "abababaab") in
+  let () = assert (recognize autom1 "babababab") in
+  let () = assert (recognize autom1 (String.make 1000 'b' ^ "ab")) in
+  (* negative tests *)
+  let () = assert (not (recognize autom1 "a")) in
+  let () = assert (not (recognize autom1 "b")) in
+  let () = assert (not (recognize autom1 "ba")) in
+  let () = assert (not (recognize autom1 "aba")) in
+  let () = assert (not (recognize autom1 "abababaaba")) in
+
+  let r2 = Star (Union (Star (Character ('a', 1)),
+  Concat (Character ('b', 1),
+  Concat (Star (Character ('a',2)),
+  Character ('b', 2))))) in
+  let autom2 = make_dfa r2 in
+  (* positive tests *)
+  let () = assert (recognize autom2 "") in
+  let () = assert (recognize autom2 "bb") in
+  let () = assert (recognize autom2 "aaa") in
+  let () = assert (recognize autom2 "aaabbaaababaaa") in
+  let () = assert (recognize autom2 "bbbbbbbbbbbbbb") in
+  let () = assert (recognize autom2 "bbbbabbbbabbbabbb") in
+  (* negative tests *)
+  let () = assert (not (recognize autom2 "b")) in
+  let () = assert (not (recognize autom2 "ba")) in
+  let () = assert (not (recognize autom2 "ab")) in
+  let () = assert (not (recognize autom2 "aaabbaaaaabaaa")) in
+  let () = assert (not (recognize autom2 "bbbbbbbbbbbbb")) in
+  let () = assert (not (recognize autom2 "bbbbabbbbabbbabbbb")) in
+  ()
+
 let () = 
-  (* test_null ();
-  test_first_last ();
-  test_follow(); *)
-  test_autom()
+  (* test_q1 ();
+  test_q2 ();
+  test_q3();
+  test_q4(); *)
+  test_q5()
