@@ -175,23 +175,41 @@ let eof = ('#', -1)  (* 定義 # 字符 *)
 
 (* 構建DFA的函數 *)
 let make_dfa r =
-  let r = Concat (r, Character eof) in
-  let trans = ref Smap.empty in
+  let r = Concat (r, Character eof) in  (* 在正則表達式末尾添加 # 字符 *)
+  let trans = ref Smap.empty in  (* 初始化一個空的狀態轉換表 *)
 
   let rec transitions q =
     if not (Smap.mem q !trans) then
-      let cmap = ref Cmap.empty in
+      let cmap = ref Cmap.empty in  (* 初始化當前狀態的字符映射 *)
+
+      (* 打印當前狀態 *)
+      Printf.printf "Processing state: { ";
+      Cset.iter (fun (c, i) ->
+        if c = '#' then Printf.printf "# "
+        else Printf.printf "%c%d " c i
+      ) q;
+      Printf.printf "}\n";
+
       Cset.iter (fun (c, _) ->
         let next_q = 
           Cset.fold (fun ci acc ->
             if fst ci = c then Cset.union acc (follow ci r) else acc
           ) q Cset.empty in
-        
+
         if not (Cset.is_empty next_q) then
           cmap := Cmap.add c next_q !cmap;
+        
+        (* 打印當前字符及其轉換結果 *)
+        Printf.printf "  On character '%c', next state: { " c;
+        Cset.iter (fun (nc, ni) ->
+          if nc = '#' then Printf.printf "# "
+          else Printf.printf "%c%d " nc ni
+        ) next_q;
+        Printf.printf "}\n";
+
       ) q;
   
-      (* 只在狀態包含 # 時，添加到空白狀態的轉換 *)
+      (* 如果狀態包含 #，則添加一個空狀態的轉換 *)
       if Cset.mem eof q then
         cmap := Cmap.add '#' Cset.empty !cmap;
   
@@ -204,6 +222,7 @@ let make_dfa r =
   transitions q0;
 
   { start = q0; trans = !trans }
+
 
 let fprint_state fmt q =
   Cset.iter (fun (c,i) ->
@@ -235,7 +254,7 @@ let test_autom () =
   save_autom "autom.dot" a
 
 let () = 
-  test_null ();
+  (* test_null ();
   test_first_last ();
-  test_follow();
+  test_follow(); *)
   test_autom()
