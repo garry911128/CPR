@@ -307,13 +307,12 @@ let test_q5 () =
   let () = assert (not (recognize autom2 "bbbbabbbbabbbabbbb")) in
   ()
 
-  let is_final state = Cset.mem eof state
+
   let number_states (aut : autom) =
     let numbering = ref Smap.empty in
     let counter = ref 0 in
     Smap.iter
       (fun q v ->
-        (* print_Cmap q; *)
         if not (Smap.mem q !numbering) then (
           numbering := Smap.add q !counter !numbering;
           counter := !counter + 1;
@@ -326,44 +325,45 @@ let test_q5 () =
       aut.trans;
     !numbering
   
-  let generate_state (fmt : Format.formatter) (state : state) (state_num : int)
-      (numbering : int Smap.t) (aut : autom) =
-    Format.fprintf fmt "state%d b = @\n" state_num;
-  
-    if is_final state then (
-      Format.fprintf fmt "  b.last <- b.current;@\n";
-      Format.fprintf fmt "  failwith \"token founded\"")
+  let is_final state = Cset.mem eof state
+
+let generate_state (fmt : Format.formatter) (state : state) (state_num : int)
+    (numbering : int Smap.t) (aut : autom) =
+  if state_num = 0 then Format.fprintf fmt "state%d b =@\n" state_num
+  else
+  Format.fprintf fmt "state%d b =@\n" state_num;  (* Only one let rec for each state *)
+
+  if is_final state then (
+    Format.fprintf fmt "  b.last <- b.current;@\n";
+    Format.fprintf fmt "  failwith \"token recognized\"@\n")
+  else (
+    Format.fprintf fmt "  try@\n";
+    Format.fprintf fmt "  let nc = next_char b in @\n";
+    let trans = try Smap.find state aut.trans with Not_found -> Cmap.empty in
+    if Cmap.is_empty trans then
+      Format.fprintf fmt "    failwith \"lexical error\"@\n"
     else (
-      Format.fprintf fmt "  try@\n";
-      Format.fprintf fmt "  let nc = next_char b in @\n";
-      let trans = try Smap.find state aut.trans with Not_found -> Cmap.empty in
-      if Cmap.is_empty trans then
-        Format.fprintf fmt "    failwith \"lexical error\"@\n"
-      else (
-        Format.fprintf fmt "    match nc with@\n";
-        Cmap.iter
-          (fun ch next_state ->
-            let next_state_num = Smap.find next_state numbering in
-            Format.fprintf fmt "    | '%c' -> state%d b@\n" ch next_state_num)
-          trans;
-        Format.fprintf fmt "    | _ -> failwith \"lexical error\"@\n");
-      Format.fprintf fmt "  with End_of_file -> raise End_of_file@\n")
+      Format.fprintf fmt "    match nc with@\n";
+      Cmap.iter
+        (fun ch next_state ->
+          let next_state_num = Smap.find next_state numbering in
+          Format.fprintf fmt "    | '%c' -> state%d b@\n" ch next_state_num)
+        trans;
+      Format.fprintf fmt "    | _ -> failwith \"lexical error\"@\n");
+    Format.fprintf fmt "  with End_of_file -> raise End_of_file@\n")
+
   
   let generate (filename : string) (aut : autom) =
     let ch = open_out filename in
     let fmt = Format.formatter_of_out_channel ch in
-    Format.fprintf
-      fmt
+    Format.fprintf fmt
       "type buffer = { text: string; mutable current: int; mutable last: int }@\n";
     Format.fprintf fmt "let next_char b =@\n";
-    Format.fprintf
-      fmt
-      "  if b.current = String.length b.text then raise End_of_file;@\n";
+    Format.fprintf fmt "  if b.current = String.length b.text then raise End_of_file;@\n";
     Format.fprintf fmt "  let c = b.text.[b.current] in@\n";
     Format.fprintf fmt "  b.current <- b.current + 1;@\n";
     Format.fprintf fmt "  c@\n@\n";
     let numbering = number_states aut in
-    (* print_Smap numbering; *)
     let first = ref true in
     Smap.iter
       (fun s i ->
