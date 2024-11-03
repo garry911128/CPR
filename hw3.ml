@@ -382,11 +382,11 @@ let generate_state (fmt : Format.formatter) (state : state) (state_num : int)
     close_out ch
   
 let () = 
-  (* test_q1 ();
+  test_q1 ();
   test_q2 ();
   test_q3();
   test_q4();
-  test_q5(); *)
+  test_q5();
   let r3 = Concat (Star (Character ('a', 1)), Character ('b', 1)) in
   let a = make_dfa r3 in
   generate "a.ml" a
