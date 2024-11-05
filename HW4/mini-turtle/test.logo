@@ -4,3 +4,10 @@
 // then complete this file as the tests progress
 
 
+// 這是一行註解
+
+(* 這是一個
+多行註解 *)
+
+// 這是一行註解，應被忽略forward 100 
+(* 註解內的 forward 100 也應被忽略 *)

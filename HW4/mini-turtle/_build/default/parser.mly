@@ -7,15 +7,12 @@
 %}
 
 /* Declaration of tokens */
-%token <int> INT
-%token PLUS MINUS TIMES DIV
-%token forward
+
 %token EOF
 /* To be completed */
 
 /* Priorities and associativity of tokens */
-%left PLUS MINUS
-%left TIMES DIV
+
 /* To be completed */
 
 /* Axiom of the grammar */
@@ -25,6 +22,7 @@
 %type <Ast.program> prog
 
 %%
+
 /* Production rules of the grammar */
 
 prog:
