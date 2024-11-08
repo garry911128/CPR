@@ -1,4 +1,7 @@
-type token = EOF
+type token = TIMES | PLUS | MINUS | INT of int | FORWARD | EOF | DIVIDE
 val menhir_begin_marker : int
+val xv_stmts : Ast.stmt list
+val xv_stmt : Ast.stmt
 val xv_prog : Ast.program
+val xv_expr : Ast.expr
 val menhir_end_marker : int
