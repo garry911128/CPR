@@ -1,3 +1,8 @@
+forward 100;
+penup;
+pendown;
+turnleft 90;
+color red;
 // start with a file containing only comments
 
 // then complete this file as the tests progress
@@ -11,4 +16,4 @@
 // 這是一行註解，應被忽略forward 100
 (* 註解內的 forward 100 也應被忽略 *)
 
-forward 100 + 1 * 0
+forward 100 + 1 * 0;

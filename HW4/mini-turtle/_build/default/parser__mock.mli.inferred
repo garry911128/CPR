@@ -1,4 +1,18 @@
-type token = TIMES | PLUS | MINUS | INT of int | FORWARD | EOF | DIVIDE
+type token =
+    TURNRIGHT
+  | TURNLEFT
+  | TIMES
+  | SEMI
+  | PLUS
+  | PENUP
+  | PENDOWN
+  | MINUS
+  | INT of int
+  | FORWARD
+  | EOF
+  | DIVIDE
+  | COLOR_NAME of string
+  | COLOR
 val menhir_begin_marker : int
 val xv_stmts : Ast.stmt list
 val xv_stmt : Ast.stmt
