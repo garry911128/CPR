@@ -6,13 +6,18 @@ type token =
   | TURNLEFT
   | TIMES
   | SEMI
+  | REPEAT
+  | RBRACE
   | PLUS
   | PENUP
   | PENDOWN
   | MINUS
+  | LBRACE
   | INT of (int)
+  | IF
   | FORWARD
   | EOF
+  | ELSE
   | DIVIDE
   | COLOR_NAME of (string)
   | COLOR

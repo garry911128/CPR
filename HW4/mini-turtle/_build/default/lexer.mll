@@ -22,12 +22,17 @@ rule token = parse
   | "red"                { COLOR_NAME "red" }
   | "blue"               { COLOR_NAME "blue" }
   | "green"              { COLOR_NAME "green" }
+  | "if"                 { IF }
+  | "else"               { ELSE }
+  | "repeat"             { REPEAT }
   | ['0'-'9']+ as int    { INT (int_of_string int) }
   | '+'                  { PLUS }
   | '-'                  { MINUS }
   | '*'                  { TIMES }
   | '/'                  { DIVIDE }
   | ';'                  { SEMI }
+  | '{'                  { LBRACE }
+  | '}'                  { RBRACE }
   | eof                  { EOF }
   | "\n"                 { token lexbuf }       (* 忽略換行符 *)
   | [' ' '\t']           { token lexbuf }       (* 忽略空白字元 *)

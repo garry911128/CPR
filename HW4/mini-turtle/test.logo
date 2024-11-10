@@ -3,6 +3,12 @@ penup;
 pendown;
 turnleft 90;
 color red;
+
+repeat 4 {
+forward 100;
+turnleft 90;
+}
+
 // start with a file containing only comments
 
 // then complete this file as the tests progress

@@ -8,6 +8,8 @@
 %token FORWARD PENUP PENDOWN TURNLEFT TURNRIGHT COLOR
 %token <string> COLOR_NAME
 %token EOF SEMI
+%token IF ELSE REPEAT
+%token LBRACE RBRACE  (* 添加 { 和 } 标记 *)
 
 /* Priorities and associativity of tokens */
 %left PLUS MINUS
@@ -45,7 +47,11 @@ stmt:
       | "white" -> Scolor Turtle.white (* 如果Graphics支持yellow的话 *)
       | _        -> Scolor Turtle.black  (* 默认为黑色 *)
     }
-
+  | IF expr stmt ELSE stmt      { Sif ($2, $3, $5) }    (* if-else 语句 *)
+  | IF expr stmt                { Sif ($2, $3, Sblock []) }  (* if 语句，没有 else 部分 *)
+  | REPEAT expr stmt            { Srepeat ($2, $3) }     (* repeat 语句 *)
+  | LBRACE stmts RBRACE         { Sblock $2 }            (* 代码块语句 *)
+  ;
 
 
 expr:
