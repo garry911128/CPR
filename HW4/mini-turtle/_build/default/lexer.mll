@@ -25,6 +25,8 @@ rule token = parse
   | "if"                 { IF }
   | "else"               { ELSE }
   | "repeat"             { REPEAT }
+  | "def"                { DEF }                (* Function definition keyword *)
+  | ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']* as id { IDENT id } (* Identifiers *)
   | ['0'-'9']+ as int    { INT (int_of_string int) }
   | '+'                  { PLUS }
   | '-'                  { MINUS }
@@ -32,6 +34,9 @@ rule token = parse
   | '/'                  { DIVIDE }
   | '{'                  { LBRACE }
   | '}'                  { RBRACE }
+  | '('                  { LPAREN }
+  | ')'                  { RPAREN }
+  | ','                  { COMMA }
   | eof                  { EOF }
   | "\n"                 { token lexbuf }       (* 忽略換行符 *)
   | [' ' '\t']           { token lexbuf }       (* 忽略空白字元 *)

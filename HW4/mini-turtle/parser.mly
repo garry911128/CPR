@@ -5,11 +5,13 @@
 /* Declaration of tokens */
 %token <int> INT
 %token PLUS MINUS TIMES DIVIDE
+%token DEF
 %token FORWARD PENUP PENDOWN TURNLEFT TURNRIGHT COLOR
 %token <string> COLOR_NAME
-%token EOF
 %token IF ELSE REPEAT
-%token LBRACE RBRACE  (* 添加 { 和 } 标记 *)
+%token <string> IDENT
+%token LBRACE RBRACE LPAREN RPAREN COMMA
+%token EOF
 
 /* Priorities and associativity of tokens */
 %left PLUS MINUS
@@ -29,8 +31,10 @@ prog:
 ;
 
 stmts:
-  | stmt stmts         { $1 :: $2 }
-  | /* empty */        { [] }
+  {[ ]}
+  | stmts stmt
+    { $1 @ [$2] }
+;
 
 stmt:
   | FORWARD expr           { Sforward $2 }
@@ -51,8 +55,21 @@ stmt:
   | IF expr stmt                { Sif ($2, $3, Sblock []) }  (* if 语句，没有 else 部分 *)
   | REPEAT expr stmt            { Srepeat ($2, $3) }     (* repeat 语句 *)
   | LBRACE stmts RBRACE         { Sblock $2 }            (* 代码块语句 *)
+  | IDENT LPAREN args RPAREN    { Scall ($1, $3)}             (* function call *)
   ;
 
+args:
+  {[ ]}
+  | arg_list 
+    { $1 }
+;
+
+arg_list:
+  expr
+    { [$1] }
+  | arg_list COMMA expr
+    { $1 @ [$3] }
+;
 
 expr:
   | INT                     { Econst $1 }
@@ -60,3 +77,8 @@ expr:
   | expr MINUS expr         { Ebinop (Sub, $1, $3) }
   | expr TIMES expr         { Ebinop (Mul, $1, $3) }
   | expr DIVIDE expr        { Ebinop (Div, $1, $3) }
+  | LPAREN expr RPAREN
+    { $2 }
+  | IDENT
+    { Evar $1 }
+;
