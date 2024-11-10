@@ -1,13 +1,14 @@
-forward 100;
-penup;
-pendown;
-turnleft 90;
-color red;
+forward 100
+penup
+pendown
+turnleft 90
+color red
 
 repeat 4 {
-forward 100;
-turnleft 90;
+forward 100
+turnleft 90
 }
+
 
 // start with a file containing only comments
 
@@ -22,4 +23,4 @@ turnleft 90;
 // 這是一行註解，應被忽略forward 100
 (* 註解內的 forward 100 也應被忽略 *)
 
-forward 100 + 1 * 0;
+forward 100 + 1 * 0

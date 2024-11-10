@@ -5,7 +5,6 @@ type token =
   | TURNRIGHT
   | TURNLEFT
   | TIMES
-  | SEMI
   | REPEAT
   | RBRACE
   | PLUS

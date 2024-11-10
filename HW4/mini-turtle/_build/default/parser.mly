@@ -7,7 +7,7 @@
 %token PLUS MINUS TIMES DIVIDE
 %token FORWARD PENUP PENDOWN TURNLEFT TURNRIGHT COLOR
 %token <string> COLOR_NAME
-%token EOF SEMI
+%token EOF
 %token IF ELSE REPEAT
 %token LBRACE RBRACE  (* 添加 { 和 } 标记 *)
 
@@ -33,12 +33,12 @@ stmts:
   | /* empty */        { [] }
 
 stmt:
-  | FORWARD expr SEMI           { Sforward $2 }
-  | PENUP SEMI                  { Spenup }
-  | PENDOWN SEMI                { Spendown }
-  | TURNLEFT expr SEMI          { Sturn $2 }            (* 左转，使用正值 *)
-  | TURNRIGHT expr SEMI         { Sturn (Ebinop (Sub, Econst 0, $2)) } (* 右转，使用负值 *)
-  | COLOR COLOR_NAME SEMI
+  | FORWARD expr           { Sforward $2 }
+  | PENUP                  { Spenup }
+  | PENDOWN                { Spendown }
+  | TURNLEFT expr          { Sturn $2 }            (* 左转，使用正值 *)
+  | TURNRIGHT expr         { Sturn (Ebinop (Sub, Econst 0, $2)) } (* 右转，使用负值 *)
+  | COLOR COLOR_NAME
     {
       match $2 with
       | "red"    -> Scolor Turtle.red

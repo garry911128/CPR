@@ -30,7 +30,6 @@ rule token = parse
   | '-'                  { MINUS }
   | '*'                  { TIMES }
   | '/'                  { DIVIDE }
-  | ';'                  { SEMI }
   | '{'                  { LBRACE }
   | '}'                  { RBRACE }
   | eof                  { EOF }
