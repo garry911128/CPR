@@ -1,4 +1,4 @@
-# dune build miniturtle.exe
+# dune exec ./miniturtle.exe tests/zigzag.logo
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/garry/.cache/dune/db
@@ -14,13 +14,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /home/garry/.opam/default/bin/ocamlc.opt -config > /tmp/dune_b7269d_output
-$ (cd _build/default && /home/garry/.opam/default/bin/menhir --explain --dump parser.mly --base parser --infer-write-query parser__mock.ml.mock)
-$ (cd _build/default && /home/garry/.opam/default/bin/ocamllex -q -o lexer.ml lexer.mll)
-$ (cd _build/default && /home/garry/.opam/default/bin/ocamldep.opt -modules -impl parser__mock.ml.mock) > _build/default/.miniturtle.eobjs/parser__mock.impl.d
-$ (cd _build/default && /home/garry/.opam/default/bin/ocamldep.opt -modules -impl lexer.ml) > _build/default/.miniturtle.eobjs/lexer.impl.d
-$ (cd _build/.sandbox/8d22d1d3a87d56fb1fa5742fe55a4755/default && /home/garry/.opam/default/bin/ocamlc.opt -g -I .miniturtle.eobjs/byte -I /home/garry/.opam/default/lib/graphics -short-paths -i -impl parser__mock.ml.mock) > _build/.sandbox/8d22d1d3a87d56fb1fa5742fe55a4755/default/parser__mock.mli.inferred
-> File "parser.mly", line 56, characters 50-54:
-> Error: This variant expression is expected to have type stmt
->        There is no constructor Sdef within type stmt
-[2]
+$ /home/garry/.opam/default/bin/ocamlc.opt -config > /tmp/dune_58cf4a_output

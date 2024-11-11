@@ -1,26 +1,35 @@
-forward 100
-penup
-pendown
-turnleft 90
-color red
 
-repeat 4 {
-forward 100
-turnleft 90
+(* draw a polygon and replace the turtle *)
+
+def polygone_aux(n, d, a) {
+  turnleft 90 + a/2
+  repeat n { forward d turnleft a }
+  turnleft 90 - a/2
 }
 
+def polygone(n, r) {
+  penup
+  forward r
+  pendown
+  polygone_aux(n, r, 360/n)
+  penup
+  forward r
+  turnleft 180
+  pendown
+}
 
-// start with a file containing only comments
+def carre(r)
+  polygone(4, r)
 
-// then complete this file as the tests progress
+def pentagone(r)
+  polygone(5, r)
 
-
-// 這是一行註解
-
-(* 這是一個
-多行註解 *)
-
-// 這是一行註解，應被忽略forward 100
-(* 註解內的 forward 100 也應被忽略 *)
-
-forward 100 + 1 * 0
+// carre(100)
+// color red
+// pentagone(100)
+color blue
+polygone(6, 100)
+// color green
+// polygone(12, 100)
+color red
+repeat 36 { pentagone(200) turnleft 10 }

@@ -5,19 +5,24 @@ type token =
   | TURNRIGHT
   | TURNLEFT
   | TIMES
+  | RPAREN
   | REPEAT
   | RBRACE
   | PLUS
   | PENUP
   | PENDOWN
   | MINUS
+  | LPAREN
   | LBRACE
   | INT of (int)
   | IF
+  | IDENT of (string)
   | FORWARD
   | EOF
   | ELSE
   | DIVIDE
+  | DEF
+  | COMMA
   | COLOR_NAME of (string)
   | COLOR
 
