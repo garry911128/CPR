@@ -1,6 +1,11 @@
+
+# Ignore all executables
+*.o
+
 # ignore the exe file
 *.exe
 #ignore the obj folder
 out
 #ignore the bin folder
 _build
+
