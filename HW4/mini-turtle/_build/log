@@ -1,0 +1,17 @@
+# dune exec ./miniturtle.exe tests/zigzag.logo
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /home/garry/.cache/dune/db
+# Workspace root:
+# /home/garry/Documents/class/senior/compiler_theory/CPR/HW4/mini-turtle
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /home/garry/.opam/default/bin/ocamlc.opt -config > /tmp/dune_58cf4a_output
